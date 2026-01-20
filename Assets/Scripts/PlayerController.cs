@@ -9,12 +9,9 @@ using UnityEngine.Windows;
 
 public class PlayerController : NetworkBehaviour
 {                                                                                       // beide sind privat damit spieler nicht drankommt: readonly = public get, private set 
-    //private readonly SyncVar<Color> playerColor = new SyncVar<Color>();
     [Header("Multiplayer")]
     private readonly SyncVar<bool> isReady = new SyncVar<bool>();
     public bool IsReady => isReady.Value;
-
-    // private Renderer playerRenderer;
 
     [Header("Movement")]
     [SerializeField] public float moveSpeed = 0;
@@ -23,9 +20,9 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private InputAction moveAction;
     [SerializeField] private InputAction attackAction;
 
+    // References
     private PlayerBulletSpawner playerBulletSpawner;
 
-    // Sachen werden gestartet / initialisiert oder eben nicht
     #region Inits             
     private void OnDisable()
     {
@@ -68,10 +65,6 @@ public class PlayerController : NetworkBehaviour
             if (attackAction.triggered) CheckForAttack();
             HandleInput();
         }
-        else
-        {
-
-        }
     }
 
     #region ReadyStateHandling
@@ -110,7 +103,13 @@ public class PlayerController : NetworkBehaviour
         float inputX = moveAction.ReadValue<Vector2>().x;
         float inputY = moveAction.ReadValue<Vector2>().y;
 
-        if (inputX != 0 || inputY != 0) Move(inputX, inputY);                               // wenn kein input, dann nichts an server senden
+        if (inputX != 0 || inputY != 0)
+        {
+            Move(inputX, inputY);                               // wenn kein input, dann nichts an server senden
+            Rotate(inputX, inputY);
+            Debug.Log("inputX: " + inputX + "/ inputY: " + inputY);
+        }
+
     }
 
     [ServerRpc]
@@ -120,6 +119,24 @@ public class PlayerController : NetworkBehaviour
         float newY = transform.position.y + inputY * moveSpeed * (float)TimeManager.TickDelta;
 
         transform.position = new Vector3(newX, newY, transform.position.z);
+    }
+
+    [ServerRpc]
+    private void Rotate(float inputX, float inputY)
+    {
+        //if (inputX > 0) Transform.Rotate.z = -180;
+
+        // this is ugly and for testing purpose only. pls do not scream.
+        if (inputX > 0) transform.eulerAngles = new Vector3(0, 0, 0);
+        if (inputX < 0) transform.eulerAngles = new Vector3(0, 0, 180);
+        if (inputY > 0) transform.eulerAngles = new Vector3(0, 0, 90);
+        if (inputY < 0) transform.eulerAngles = new Vector3(0, 0, 270);
+        //if (inputX != 0)
+        //{
+        //if (inputX > 0) transform.rotation = new Vector3(0, 0, 180);
+        //if (inputX != 0) transform.rotation = Quaternion.Euler(0, 0, inputX);
+        //if (inputX < 0) transform.rotation = Quaternion.Euler(0, 0, -180);
+        //}
     }
     #endregion
 

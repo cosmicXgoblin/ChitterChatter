@@ -37,7 +37,7 @@ public class PlayerBulletSpawner : NetworkBehaviour
         //spawnedBullet.transform.parent = transform;
         spawnedBullet.GetComponent<PlayerBullet>().speed = speed;
         spawnedBullet.GetComponent<PlayerBullet>().bulletLife = bulletLife;
-        //spawnedBullet.transform.rotation = transform.rotation;
+        spawnedBullet.transform.rotation = transform.rotation;
         // Spawn it on all clients (server authority)
         Spawn(spawnedBullet);
 
