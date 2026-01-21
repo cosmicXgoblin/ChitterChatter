@@ -17,6 +17,7 @@ public class PlayerBulletSpawner : NetworkBehaviour
     public float speed = 1f;
 
     private GameObject spawnedBullet;
+    public int shootFromPlayer;
 
     public override void OnStartServer()
     {
@@ -26,18 +27,28 @@ public class PlayerBulletSpawner : NetworkBehaviour
         //else Destroy(gameObject);
     }
 
+    private void Awake()
+    {
+        //shootFromPlayer = gameObject.GetComponent<PlayerData>().playerId;
+        Debug.Log(shootFromPlayer);
+    }
+
     [Server]
     public void AttemptToFire()
     {
         if (!IsServerInitialized) //!IsOwner)
             return;
 
+        shootFromPlayer = gameObject.GetComponent<PlayerData>().playerId;
+
         spawnedBullet = Instantiate(bullet, this.transform.position, Quaternion.identity);
-        // adopt it
-        //spawnedBullet.transform.parent = transform;
         spawnedBullet.GetComponent<PlayerBullet>().speed = speed;
         spawnedBullet.GetComponent<PlayerBullet>().bulletLife = bulletLife;
+        spawnedBullet.GetComponent<PlayerBullet>().owner = shootFromPlayer;
         spawnedBullet.transform.rotation = transform.rotation;
+
+        Debug.Log("Owner: " + spawnedBullet.GetComponent<PlayerBullet>().owner + " shootFromPlayer: " + shootFromPlayer);
+
         // Spawn it on all clients (server authority)
         Spawn(spawnedBullet);
 

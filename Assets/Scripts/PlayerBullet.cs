@@ -7,11 +7,13 @@ public class PlayerBullet : NetworkBehaviour
     public float bulletLife = 1f;
     public float rotation = 0f;
     public float speed = 1f;
+    public int owner;
 
     public float damage = 5f;
 
     private Vector2 spawnPoint;
     private float timer = 0f;
+
 
     [Server]
     void Start()
@@ -50,17 +52,17 @@ public class PlayerBullet : NetworkBehaviour
         {
             Debug.Log("Damage to Enemy will be done");
 
-            NetworkGameManager.Instance.TakeDamage(other, damage);
+            NetworkGameManager.Instance.TakeDamageFromPlayer(other, damage, owner);
 
-            Despawn(DespawnType.Destroy);
-            Destroy(this.gameObject);
-
-            if(other.gameObject.GetComponent<BulletSpawner>().currentHealth == 0)
-            { 
-                NetworkGameManager.Instance.TempGetPoints(1);
-                NetworkGameManager.Instance.scoreText.text = NetworkGameManager.Instance.score.ToString();
-            }
+            Die();
 
         }
+    }
+
+    private void Die()
+    {
+        Despawn(DespawnType.Destroy);
+        Destroy(this.gameObject);
+        Debug.Log("ByeBye PlayerBullet with the owner: " + owner);
     }
 }

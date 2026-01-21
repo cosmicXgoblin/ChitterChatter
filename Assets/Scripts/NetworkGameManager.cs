@@ -15,48 +15,50 @@ public class NetworkGameManager : NetworkBehaviour
     [Header("UI")]
     [SerializeField] private TMP_Text stateText;
     [SerializeField] private GameObject stateTextBox;
-    [SerializeField] private TMP_Text player1NameText;
-    [SerializeField] private TMP_Text player1StateText;
-    [SerializeField] private TMP_Text player2NameText;
-    [SerializeField] private TMP_Text player2StateText;
-    [SerializeField] private GameObject player1HealthBar;
-    [SerializeField] private GameObject player2HealthBar;
     [SerializeField] private TMP_InputField PlayerNameField;
     [SerializeField] private Button ReadyButton;
     [SerializeField] private TMP_Text ReadyButtonText;
     [SerializeField] public TMP_Text playerIndexText;
 
+    [Header("UI Player1")]
+    [SerializeField] private TMP_Text player1NameText;
+    [SerializeField] private TMP_Text player1StateText;
+    [SerializeField] private GameObject player1HealthBar;
+    [SerializeField] private TMP_Text player1Score;
     [SerializeField] private Slider healthBarSlider;
-    [SerializeField] private TextMeshProUGUI healthBarValueText;
+    [SerializeField] private TMP_Text healthBarValueText;
+
+    [Header("UI Player1")]
+    [SerializeField] private TMP_Text player2NameText;
+    [SerializeField] private TMP_Text player2StateText;
+    [SerializeField] private GameObject player2HealthBar;
+    [SerializeField] private TMP_Text player2Score;
     [SerializeField] private Slider healthBarSlider2;
-    [SerializeField] private TextMeshProUGUI healthBarValueText2;
+    [SerializeField] private TMP_Text healthBarValueText2;
 
+    [Header("UI LevelManagement")]
     [SerializeField] private GameObject startscreen;
-
     [SerializeField] private GameObject Level0;
     [SerializeField] private GameObject Level1;
 
+    [Header("UI Spawner")]
     [SerializeField] private GameObject bulletSpawner;
     private GameObject spawnedBulletSpawner;
 
+    [Header("SyncVars Player")]
     public readonly SyncVar<string> Player1Name = new SyncVar<string>();
     public readonly SyncVar<string> Player2Name = new SyncVar<string>();
     public readonly SyncVar<string> Player1State = new SyncVar<string>();
     public readonly SyncVar<string> Player2State = new SyncVar<string>();
     public readonly SyncVar<float> Player1Health = new SyncVar<float>();
     public readonly SyncVar<float> Player2Health = new SyncVar<float>();
-
-    //[SerializeField] private GameObject BulletSpawner1;
-
-    //[Header("Score")]
-    //private readonly SyncVar<int> scoreP1 = new SyncVar<int>();
-    //private readonly SyncVar<int> scoreP2 = new SyncVar<int>();
+    private readonly SyncVar<int> Player1Score = new SyncVar<int>();
+    private readonly SyncVar<int> Player2Score = new SyncVar<int>();
 
     [Header("Game")]
     public readonly SyncVar<GameState> gameState = new SyncVar<GameState>();
     public GameState CurrentState => gameState.Value;
-    [SerializeField] public float score = 0f;
-    [SerializeField] public TextMeshProUGUI scoreText;
+
 
 
     private void Awake()
@@ -67,8 +69,9 @@ public class NetworkGameManager : NetworkBehaviour
 
         // Suscribe to changing things
         gameState.OnChange += OnStateChanged;
-        //scoreP1.OnChange += (oldVal, newVal, asServer) => UpdateStateText();
-        //scoreP2.OnChange += (oldVal, newVal, asServer) => UpdateStateText();
+
+        Player1Score.OnChange += (oldVal, newVal, asServer) => UpdateScore();
+        Player2Score.OnChange += (oldVal, newVal, asServer) => UpdateScore();
 
         Player1Name.OnChange += (oldVal, newVal, asServer) =>
         {
@@ -93,8 +96,6 @@ public class NetworkGameManager : NetworkBehaviour
         };
         Player1Health.OnChange += (oldVal, newVal, asServer) =>
         {
-            //if (healthBarSlider != null)
-            //    healthBarSlider.value = newVal;
             foreach (var playerData in FindObjectsByType<PlayerData>(FindObjectsSortMode.None))
             {
                 if (playerData.playerId == 1) playerData.currentHealth = newVal;
@@ -111,7 +112,6 @@ public class NetworkGameManager : NetworkBehaviour
                 healthBarValueText2.text = newVal.ToString() + " / " + playerData.maxHealth;
             }
         };
-
         // disable the statebox until we need it and activate it
         stateTextBox.SetActive(false);
     }
@@ -119,7 +119,6 @@ public class NetworkGameManager : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        //Debug.Log("Server started Game Manager");
         gameState.Value = GameState.WaitingForPlayers;
         //scoreP1.Value = 0;
         //scoreP2.Value = 0;
@@ -128,9 +127,6 @@ public class NetworkGameManager : NetworkBehaviour
         //healthBarSlider2.value = 100f;
 
     }
-
-
-
 
     #region State-Handling
 
@@ -143,53 +139,47 @@ public class NetworkGameManager : NetworkBehaviour
         if (players.Length >= 2 && players.All(p => p.IsReady))
         {
             SetPlayerData();
+            Player1Score.Value = 0;
+            Player2Score.Value = 0;
+            UpdateScore();
+
             Level1.SetActive(true);
-            //Level0.SetActive(false);
             Despawn(Level0);                // yes this works
             gameState.Value = GameState.Playing;
-            //StartCoroutine(BallSpawner.Instance.SpawnBall(5f));
-            //BulletSpawner1.AttemptToFire();
-            //BulletSpawner.Instance.Fire();
 
+            // for testing only
+            SpawnBulletSpawner(40f);
+            SpawnBulletSpawner(40f);
             SpawnBulletSpawner(40f);
         }
     }
 
     public void SetPlayerData()
     {
-        // set up the players:
-        // before starting the game, we want to set playerName, playerID, curerntHealth and maxHealth accorind to our settings
-
-        // if we are having the player data with id 1
-        //foreach (var playerData in FindObjectsByType<PlayerData>(FindObjectsSortMode.None))
-        //    if (playerData.IsOwner && playerData.playerId == 1)
-        //    {
-        //        playerData.playerName = Player1Name.ToString();
-        //        ChangeHealth1(playerData.currentHealth);
-        //    }
-        //    else
-        //    {
-        //        playerData.playerName = Player2Name.ToString();
-        //        playerData.currentHealth = Player2Health.Value;
-        //        ChangeHealth2(playerData.currentHealth);
-        //    }
         foreach (var playerData in FindObjectsByType<PlayerData>(FindObjectsSortMode.None))
             if (playerData.IsOwner && playerData.playerId == 1)
             {
                 playerData.playerName = Player1Name.ToString();
-                // ChangeHealth1(playerData.maxHealth);
                 Player1Health.Value = playerData.maxHealth;
-                //Debug.Log("MaxHealth for Player " + playerData.playerId + " is " + Player1Health.Value + 
-                //" because the maxHealth was " + playerData.maxHealth + ".");
             }
             else
             {
                 playerData.playerName = Player2Name.ToString();
-                //ChangeHealth2(playerData.maxHealth);
                 Player2Health.Value = playerData.maxHealth;
-                //Debug.Log("MaxHealth for Player " + playerData.playerId + " is " + Player2Health.Value +
-                //" because the maxHealth was " + playerData.maxHealth + ".");
             }
+
+        SetPlayerBulletSpawner();
+    }
+
+    private void SetPlayerBulletSpawner()
+    {
+        foreach (var player in FindObjectsByType<PlayerController>(FindObjectsSortMode.None))
+        {
+            if (player.IsOwner)
+            {
+                player.gameObject.GetComponent<PlayerBulletSpawner>().shootFromPlayer = player.gameObject.GetComponent<PlayerData>().playerId;
+            }
+        }
     }
 
     public void SetPlayerReady()
@@ -202,28 +192,27 @@ public class NetworkGameManager : NetworkBehaviour
                 {
                     ReadyButton.image.color = Color.green;
                     ReadyButtonText.text = "i need a moment";
-
-                    //Set
-                    //if (player.transform.position.x < 0) player1StateText.text = Player1Name.Value + " ist dabei.";
-                    //else player2StateText.text = Player2Name.Value + " ist dabei.";
-
                 }
                 else
                 {
                     ReadyButton.image.color = Color.white;
                     ReadyButtonText.text = "I AM READY!";
-
-                    //if (player.transform.position.x < 0) player1StateText.text = Player1Name.Value + " ist nicht dabei.";
-                    //else player2StateText.text = Player2Name.Value + " ist nicht dabei.";
                 }
                 player.SetReadyStateServerRpc(PlayerNameField.text);
-                //player.SetPlayerIndex();
-
-                //Debug.Log("Player is ready");
             }
         }
     }
+    
+    private void UpdateScore()
+    {
+        player1Score.text = Player1Score.Value.ToString();
+        player2Score.text = Player2Score.Value.ToString();
 
+        //player1Score.text = Player1Score.Value.ToString();
+        //player2Score.text = "This is a test HELP";
+
+        Debug.Log("Score was updated");
+    }
 
     [TargetRpc]
     public void DisableNameField(NetworkConnection con, bool isOff)
@@ -247,7 +236,7 @@ public class NetworkGameManager : NetworkBehaviour
                 stateTextBox.SetActive(false);
                 break;
             case GameState.Playing:
-                //stateText.text = $"{scoreP1.Value}:{scoreP2.Value}";
+
                 startscreen.SetActive(false);
                 stateTextBox.SetActive(true);
                 break;
@@ -313,15 +302,45 @@ public class NetworkGameManager : NetworkBehaviour
         {
             //other.GetComponent<BulletSpawner>().currentHealth = -dmg;
             other.gameObject.GetComponent<BulletSpawner>().SpawnerHealth.Value =
-            other.gameObject.GetComponent<BulletSpawner>().SpawnerHealth.Value - dmg;
+                other.gameObject.GetComponent<BulletSpawner>().SpawnerHealth.Value - dmg;
             Debug.Log("Damage to Enemy was done");
         }
     }
 
-    public void TempGetPoints(float points)
+    public void TakeDamageFromPlayer(Collider2D other, float dmg, int owner)
     {
-        score = score + points;
+        if (other.tag == "Enemy")
+        {
+            //other.GetComponent<BulletSpawner>().currentHealth = -dmg;
+            other.gameObject.GetComponent<BulletSpawner>().SpawnerHealth.Value =
+                other.gameObject.GetComponent<BulletSpawner>().SpawnerHealth.Value - dmg;
+            Debug.Log("Damage to Enemy was done by " + owner);
+        }
+
+        if (other.GetComponent<BulletSpawner>().currentHealth <= 0)
+        {
+            if (owner == 1) Player1Score.Value++;
+            if (owner == 2) Player2Score.Value++;
+            else Debug.Log("This bullet was without parents, so no score for anybody. Sorry!");
+            Debug.Log(Player1Score.Value.ToString() + " / " + Player2Score.Value.ToString());
+
+            other.GetComponent<BulletSpawner>().Die();
+        }
+
+
     }
+
+    //[Server]
+    //public void Score(int owner)
+    //{
+    //    if (owner == 1) Player1Score.Value = 22;
+    //    else Player2Score.Value =+ 1;
+    //}
+
+    //public void TempGetPoints(float points)
+    //{
+    //    score = score + points;
+    //}
 
     //public void FireServer(GameObject bullet, Vector3 GameObject.transform.position, Quaternion.identity))
     //{

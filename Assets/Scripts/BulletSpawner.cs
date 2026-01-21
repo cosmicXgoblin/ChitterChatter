@@ -38,8 +38,12 @@ public class BulletSpawner: NetworkBehaviour
     {
         if (!IsServerInitialized) return;
 
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        //if (Instance == null) Instance = this;
+        //else
+        //{
+        //    Destroy(gameObject);
+        //    Debug.Log("multiple Instances of BulletSpawner found. DESTROY.");
+        //}
     }
 
     private void Awake()
@@ -73,8 +77,8 @@ public class BulletSpawner: NetworkBehaviour
             else renderer.color = Color.red;
         }
 
-        if (currentHealth == 0)
-            Die();
+        //if (currentHealth == 0)
+        //    Die();
     }
 
     public void Fire()
@@ -95,7 +99,7 @@ public class BulletSpawner: NetworkBehaviour
         }
     }
 
-    private void Die()
+    public void Die()
     {
         Debug.Log("BulletSpawner sagt byebye");
         Despawn(DespawnType.Destroy);

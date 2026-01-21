@@ -46,6 +46,7 @@ public class Bullet : NetworkBehaviour
         float y = timer * speed * transform.right.y;
         // gives back the new position
         return new Vector2(x + spawnPoint.x, y + spawnPoint.y);
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
