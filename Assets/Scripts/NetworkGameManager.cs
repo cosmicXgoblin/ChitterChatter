@@ -3,10 +3,12 @@ using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using GameKit.Dependencies.Utilities;
 using JetBrains.Annotations;
+using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static BulletSpawner;
 
 public class NetworkGameManager : NetworkBehaviour
 {
@@ -44,6 +46,11 @@ public class NetworkGameManager : NetworkBehaviour
     [Header("UI Spawner")]
     [SerializeField] private GameObject bulletSpawner;
     private GameObject spawnedBulletSpawner;
+
+    [Header("Spawnpoints for Testing")]
+    [SerializeField] private Transform Spawnpoint1;
+    [SerializeField] private Transform Spawnpoint2;
+    [SerializeField] private Transform Spawnpoint3;
 
     [Header("SyncVars Player")]
     public readonly SyncVar<string> Player1Name = new SyncVar<string>();
@@ -120,12 +127,6 @@ public class NetworkGameManager : NetworkBehaviour
     {
         base.OnStartServer();
         gameState.Value = GameState.WaitingForPlayers;
-        //scoreP1.Value = 0;
-        //scoreP2.Value = 0;
-
-        //healthBarSlider.value = 100f;
-        //healthBarSlider2.value = 100f;
-
     }
 
     #region State-Handling
@@ -148,9 +149,9 @@ public class NetworkGameManager : NetworkBehaviour
             gameState.Value = GameState.Playing;
 
             // for testing only
-            SpawnBulletSpawner(40f);
-            SpawnBulletSpawner(40f);
-            SpawnBulletSpawner(40f);
+            SpawnBulletSpawner(15f, Spawnpoint1, 1f, true);
+            SpawnBulletSpawner(30f, Spawnpoint2, 3f, false);
+            SpawnBulletSpawner(45f, Spawnpoint3, 0.5f, true);
         }
     }
 
@@ -274,16 +275,25 @@ public class NetworkGameManager : NetworkBehaviour
     //    }
 
     [Server]
-    private void SpawnBulletSpawner(float health)
+    private void SpawnBulletSpawner(float health, Transform spawn, float speed, bool spin)
     {
         spawnedBulletSpawner = Instantiate(bulletSpawner, this.transform.position, Quaternion.identity);
+        spawnedBulletSpawner.transform.position = spawn.position;
+        spawnedBulletSpawner.GetComponent<BulletSpawner>().firingRate = speed;
+
+        if (spin) 
+            spawnedBulletSpawner.GetComponent<BulletSpawner>().spawnerType = SpawnerType.Spin;
+
+        //if (spin) spawnerType.Spin.Value;
+
         spawnedBulletSpawner.GetComponent<BulletSpawner>().SpawnerHealth.Value = health;
         spawnedBulletSpawner.GetComponent<BulletSpawner>().currentHealth = health;
         spawnedBulletSpawner.GetComponent<BulletSpawner>().maxHealth = health;
-
+        
         Spawn(spawnedBulletSpawner);
         // Debug.Log("Bullet Spawner should be spawned now");
     }
+
     public void TakeDamage(Collider2D other, float dmg)
     {
         // friendly fire is on atm - TODO: toggle it

@@ -9,14 +9,16 @@ using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+ //enum SpawnerType { Straight, Spin }
+
 public class BulletSpawner: NetworkBehaviour
 {
-    enum SpawnerType { Straight, Spin }
+    public enum SpawnerType { Straight, Spin }
     public static BulletSpawner Instance;
 
     [Header("Spawner Attributes")]
-    [SerializeField] private SpawnerType spawnerType;
-    [SerializeField] private float firingRate = 1f;
+    public SpawnerType spawnerType;
+    [SerializeField] public float firingRate;
     [SerializeField] public float currentHealth;
     [SerializeField] public float maxHealth;
     [SerializeField] private GameObject HealthPoint;
@@ -89,10 +91,12 @@ public class BulletSpawner: NetworkBehaviour
         if (NetworkGameManager.Instance.CurrentState == GameState.Playing)
         {
             spawnedBullet = Instantiate(Bullet, this.gameObject.transform.position, Quaternion.identity);
-            // spawnedBullet.transform.parent = transform;
             spawnedBullet.GetComponent<Bullet>().speed = speed;
             spawnedBullet.GetComponent<Bullet>().bulletLife = bulletLife;
             spawnedBullet.transform.rotation = transform.rotation;
+
+            if (this.currentHealth <= maxHealth / 3) spawnedBullet.GetComponent<Bullet>().damage =+ 20;
+
             // Spawn it on all clients (server authority)
             Spawn(spawnedBullet);
             Debug.Log(spawnedBullet + ": bulletLife: " + bulletLife);
