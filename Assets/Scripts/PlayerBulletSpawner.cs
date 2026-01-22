@@ -19,6 +19,7 @@ public class PlayerBulletSpawner : NetworkBehaviour
     private GameObject spawnedBullet;
     public int shootFromPlayer;
 
+    #region Init
     public override void OnStartServer()
     {
         if (!IsServerInitialized) return;
@@ -32,7 +33,9 @@ public class PlayerBulletSpawner : NetworkBehaviour
         //shootFromPlayer = gameObject.GetComponent<PlayerData>().playerId;
         Debug.Log(shootFromPlayer);
     }
+    #endregion
 
+    #region Attacking
     [Server]
     public void AttemptToFire()
     {
@@ -54,6 +57,7 @@ public class PlayerBulletSpawner : NetworkBehaviour
 
         Debug.Log("Sollte gefeuert haben");
     }
+    #endregion
 }
 
 

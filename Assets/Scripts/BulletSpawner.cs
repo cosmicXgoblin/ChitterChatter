@@ -42,6 +42,7 @@ public class BulletSpawner: NetworkBehaviour
     public readonly SyncVar<float> SpawnerHealth = new SyncVar<float>();
     public readonly SyncVar<Color> HealthPointColor = new SyncVar<Color>();
 
+    #region Init
     public override void OnStartServer()
     {
         if (!IsServerInitialized) return;
@@ -62,6 +63,7 @@ public class BulletSpawner: NetworkBehaviour
    
         };
     }
+    #endregion
 
     [Server]
     void Update()
@@ -100,6 +102,7 @@ public class BulletSpawner: NetworkBehaviour
         }
     }
 
+    #region Attacking
     public void Fire()
     {
         if (!IsServerInitialized)
@@ -117,13 +120,9 @@ public class BulletSpawner: NetworkBehaviour
             Spawn(spawnedBullet);
         }
     }
+    #endregion
 
-    [Server]
-    public void AttemptToDie()
-    {
-        StartCoroutine(ChangeSpriteTemp(0.02f));
-    }
-
+    #region Animation/Sprites
     [Server]
     public IEnumerator ChangeSpriteTemp(float delay)
     {
@@ -135,11 +134,20 @@ public class BulletSpawner: NetworkBehaviour
 
         Die();
     }
+    #endregion
 
+    #region Dying
     [Server]
     public void Die()
     {
         Despawn(DespawnType.Destroy);
         Destroy(this.gameObject);
     }
+
+    [Server]
+    public void AttemptToDie()
+    {
+        StartCoroutine(ChangeSpriteTemp(0.02f));
+    }
+    #endregion
 }

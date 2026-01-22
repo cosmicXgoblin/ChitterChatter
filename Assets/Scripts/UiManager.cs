@@ -22,6 +22,7 @@ public class UiManager : MonoBehaviour
         UiOnAwake();
     }
 
+    #region UiOn...
     private void UiOnAwake()
     {
         menuJoinServer.SetActive(false);
@@ -32,9 +33,11 @@ public class UiManager : MonoBehaviour
     public void UiOnStartGame()
     {
         Level1.SetActive(true);
+        areUReadyScreen.SetActive(false);
     }
+    #endregion
 
-    #region ClickTo(...)
+    #region Click(...)
     public void ClickRestartGame()
     {
         RestartGameUi();

@@ -14,7 +14,7 @@ public class PlayerBullet : NetworkBehaviour
     private Vector2 spawnPoint;
     private float timer = 0f;
 
-
+    #region Init
     [Server]
     void Start()
     {
@@ -23,6 +23,7 @@ public class PlayerBullet : NetworkBehaviour
         // save the spawn point
         spawnPoint = new Vector2(transform.position.x, transform.position.y);
     }
+    #endregion
 
     [Server]
     void Update()

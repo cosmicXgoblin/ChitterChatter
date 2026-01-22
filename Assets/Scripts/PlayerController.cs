@@ -119,7 +119,6 @@ public class PlayerController : NetworkBehaviour
         NetworkGameManager.Instance.Player1State.Value = " is not ready";
         NetworkGameManager.Instance.Player2State.Value = " is not ready";
     }
-
     #endregion
 
     #region Movement
@@ -165,6 +164,7 @@ public class PlayerController : NetworkBehaviour
     }
     #endregion
 
+    #region Attacking
     [ServerRpc]
     private void CheckForAttack()
     {
@@ -175,7 +175,9 @@ public class PlayerController : NetworkBehaviour
         //}
 
     }
+    #endregion
 
+    #region Sprites/Animation
     [ServerRpc]
     public void ChangeSpriteTemp()
     {
@@ -184,7 +186,6 @@ public class PlayerController : NetworkBehaviour
 
         StartCoroutine(ChangeSpriteTempBack(0.2f));
     }
-
 
     [Server]
     public IEnumerator ChangeSpriteTempBack(float delay)                                   
@@ -197,13 +198,6 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Server]
-    public void AttemptToDie(float delay)
-    {
-        StartCoroutine(ChangeSpriteTemp(0.02f));
-
-    }
-
-    [Server]
     public IEnumerator ChangeSpriteTemp(float delay)
     {
         SpriteRenderer renderer = GetComponent<SpriteRenderer>();       //syncvar?
@@ -213,6 +207,14 @@ public class PlayerController : NetworkBehaviour
         yield return new WaitForSeconds(delay);
 
         Die();
+    }
+    #endregion
+
+    #region Dying
+    [Server]
+    public void AttemptToDie(float delay)
+    {
+        StartCoroutine(ChangeSpriteTemp(0.02f));
     }
 
     [Server]
@@ -229,4 +231,5 @@ public class PlayerController : NetworkBehaviour
 
         NetworkGameManager.Instance.gameState.Value = GameState.Finished;
     }
+    #endregion
 }
