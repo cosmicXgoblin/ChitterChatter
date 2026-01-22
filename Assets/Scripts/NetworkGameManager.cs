@@ -24,6 +24,7 @@ public class NetworkGameManager : NetworkBehaviour
 
     [Header("UI Player1")]
     [SerializeField] private TMP_Text player1NameText;
+    [SerializeField] private GameObject player1StateBox;
     [SerializeField] private TMP_Text player1StateText;
     [SerializeField] private GameObject player1HealthBar;
     [SerializeField] private TMP_Text player1Score;
@@ -32,6 +33,7 @@ public class NetworkGameManager : NetworkBehaviour
 
     [Header("UI Player1")]
     [SerializeField] private TMP_Text player2NameText;
+    [SerializeField] private GameObject player2StateBox;
     [SerializeField] private TMP_Text player2StateText;
     [SerializeField] private GameObject player2HealthBar;
     [SerializeField] private TMP_Text player2Score;
@@ -65,8 +67,6 @@ public class NetworkGameManager : NetworkBehaviour
     [Header("Game")]
     public readonly SyncVar<GameState> gameState = new SyncVar<GameState>();
     public GameState CurrentState => gameState.Value;
-
-
 
     private void Awake()
     {
@@ -240,6 +240,8 @@ public class NetworkGameManager : NetworkBehaviour
 
                 startscreen.SetActive(false);
                 stateTextBox.SetActive(true);
+                player1StateBox.SetActive(false);
+                player2StateBox.SetActive(false);
                 break;
             case GameState.Finished:
                 stateText.text = "Finished";

@@ -4898,12 +4898,14 @@ MonoBehaviour:
   ReadyButtonText: {fileID: 596049893}
   playerIndexText: {fileID: 1912934726}
   player1NameText: {fileID: 1890877236}
+  player1StateBox: {fileID: 1545500053}
   player1StateText: {fileID: 1545500055}
   player1HealthBar: {fileID: 671977422}
   player1Score: {fileID: 703736367}
   healthBarSlider: {fileID: 671977424}
   healthBarValueText: {fileID: 1640137918}
   player2NameText: {fileID: 1618492341}
+  player2StateBox: {fileID: 516670082}
   player2StateText: {fileID: 516670084}
   player2HealthBar: {fileID: 1030939798}
   player2Score: {fileID: 1410619078}
@@ -8997,7 +8999,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
-  WasActiveDuringEdit: 0
+  WasActiveDuringEdit: 1
   WasActiveDuringEdit_Set1: 1
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}

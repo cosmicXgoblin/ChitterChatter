@@ -55,7 +55,6 @@ public class PlayerBullet : NetworkBehaviour
             NetworkGameManager.Instance.TakeDamageFromPlayer(other, damage, owner);
 
             Die();
-
         }
     }
 
