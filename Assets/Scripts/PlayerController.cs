@@ -177,4 +177,33 @@ public class PlayerController : NetworkBehaviour
             renderer.sprite = spriteBasic;
         }
     }
+
+    [Server]
+    public void AttemptToDie(float delay)
+    {
+        StartCoroutine(ChangeSpriteTemp(0.02f));
+
+        //Die();
+    }
+    [Server]
+    public IEnumerator ChangeSpriteTemp(float delay)
+    {
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();       //syncvar?
+        renderer.sprite = spriteDeath1;
+        yield return new WaitForSeconds(delay);
+        renderer.sprite = spriteDeath2;
+        yield return new WaitForSeconds(delay);
+
+        Die();
+    }
+
+    [Server]
+    public void Die()
+    {
+        Debug.Log("You're dead now! YAY.");
+
+        //Debug.Log("BulletSpawner sagt byebye");
+        //Despawn(DespawnType.Destroy);
+        //Destroy(this.gameObject);
+    }
 }

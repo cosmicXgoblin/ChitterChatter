@@ -305,11 +305,21 @@ public class NetworkGameManager : NetworkBehaviour
             {
                 Player1Health.Value = Player1Health.Value - dmg;
                 other.gameObject.GetComponent<PlayerController>().ChangeSpriteTemp();
+
+                if (Player1Health.Value <= 0)
+                {
+                    other.gameObject.GetComponent<PlayerController>().AttemptToDie(0.02f);
+                }
             }
             else if (other.gameObject.gameObject.GetComponent<PlayerData>().playerId == 2)
             {
                 Player2Health.Value = Player1Health.Value - dmg;
                 other.gameObject.GetComponent<PlayerController>().ChangeSpriteTemp();
+
+                if (Player1Health.Value <= 0)
+                {
+                    other.gameObject.GetComponent<PlayerController>().AttemptToDie(0.02f);
+                }
             }
         }               
         //else if (other.tag == "Enemy")
@@ -333,7 +343,7 @@ public class NetworkGameManager : NetworkBehaviour
 
         if (other.GetComponent<BulletSpawner>().currentHealth <= 0)
         { 
-            other.GetComponent<BulletSpawner>().AttemptToDie(5f);
+            other.GetComponent<BulletSpawner>().AttemptToDie();
 
             if (owner == 1) Player1Score.Value++;
             if (owner == 2) Player2Score.Value++;

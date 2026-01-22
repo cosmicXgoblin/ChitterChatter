@@ -133,7 +133,7 @@ public class BulletSpawner: NetworkBehaviour
     }
 
     [Server]
-    public void AttemptToDie(float delay)
+    public void AttemptToDie()
     {
         StartCoroutine(ChangeSpriteTemp(0.02f));
 
