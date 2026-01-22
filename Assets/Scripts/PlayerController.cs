@@ -44,7 +44,6 @@ public class PlayerController : NetworkBehaviour
 
     private void Start()
     {
-        // playerBulletSpawner = this.gameObject.GetComponentInChildren<PlayerBulletSpawner>();
         playerBulletSpawner = gameObject.GetComponent<PlayerBulletSpawner>();
         StartCoroutine(DelayedIsOwner());
     }
@@ -80,26 +79,45 @@ public class PlayerController : NetworkBehaviour
     {
         isReady.Value = !isReady.Value;
 
-        // TO-DO: pls, for the love of everything, change it
-        if (transform.position.x < 0)                                                   // wenn der spieler links ist
-        {
-            NetworkGameManager.Instance.Player1Name.Value = name;
-            this.GetComponent<PlayerData>().playerId = 1;
+        //if (NetworkGameManager.Instance.round <= 1)
+        //{
+            // TO-DO: pls, for the love of everything, change it
+            if (transform.position.x < 0)                                                   // wenn der spieler links ist
+            {
+                NetworkGameManager.Instance.Player1Name.Value = name;
+                this.GetComponent<PlayerData>().playerId = 1;
 
-            if (IsReady) NetworkGameManager.Instance.Player1State.Value = " is ready";
-            else NetworkGameManager.Instance.Player1State.Value = " is not ready";
-        }
-        else
-        {
-            NetworkGameManager.Instance.Player2Name.Value = name;
-            this.GetComponent<PlayerData>().playerId = 2;
+                if (IsReady) NetworkGameManager.Instance.Player1State.Value = " is ready";
+                else NetworkGameManager.Instance.Player1State.Value = " is not ready";
+            }
+            else
+            {
+                NetworkGameManager.Instance.Player2Name.Value = name;
+                this.GetComponent<PlayerData>().playerId = 2;
 
-            if (IsReady) NetworkGameManager.Instance.Player2State.Value = " is ready";
-            else NetworkGameManager.Instance.Player2State.Value = " is not ready";
+                if (IsReady) NetworkGameManager.Instance.Player2State.Value = " is ready";
+                else NetworkGameManager.Instance.Player2State.Value = " is not ready";
+            }
+        //}
+        //else
+        {
+            if (IsOwner)
+            {
+                moveAction?.Enable();                                                           // ? = if not null
+                attackAction?.Enable();
+            }
         }
 
         NetworkGameManager.Instance.DisableNameField(Owner, isReady.Value);
         NetworkGameManager.Instance.CheckAndStartGame();
+    }
+
+    [ServerRpc]
+    public void SetUnreadyStateServerRpc()
+    {
+        isReady.Value = !isReady.Value;
+        NetworkGameManager.Instance.Player1State.Value = " is not ready";
+        NetworkGameManager.Instance.Player2State.Value = " is not ready";
     }
 
     #endregion
@@ -183,8 +201,8 @@ public class PlayerController : NetworkBehaviour
     {
         StartCoroutine(ChangeSpriteTemp(0.02f));
 
-        //Die();
     }
+
     [Server]
     public IEnumerator ChangeSpriteTemp(float delay)
     {
@@ -202,8 +220,13 @@ public class PlayerController : NetworkBehaviour
     {
         Debug.Log("You're dead now! YAY.");
 
-        //Debug.Log("BulletSpawner sagt byebye");
-        //Despawn(DespawnType.Destroy);
-        //Destroy(this.gameObject);
+        if (IsOwner)
+        {
+            moveAction?.Disable();
+            attackAction?.Disable();
+        }
+        isReady.Value = !isReady.Value;
+
+        NetworkGameManager.Instance.gameState.Value = GameState.Finished;
     }
 }

@@ -22,6 +22,12 @@ public class BulletSpawner: NetworkBehaviour
     [SerializeField] public float currentHealth;
     [SerializeField] public float maxHealth;
     [SerializeField] private GameObject HealthPoint;
+    private bool strongerAttack = false;
+
+    [Header("Spawner Sprites")]
+    [SerializeField] Sprite spriteBasic;
+    [SerializeField] Sprite spriteDeath1;
+    [SerializeField] Sprite spriteDeath2;
 
     [Header("Bullet Attributes")]
     public GameObject Bullet;
@@ -32,26 +38,13 @@ public class BulletSpawner: NetworkBehaviour
     public GameObject spawnedBullet;
     private float timer = 0f;
 
-    private bool strongerAttack = false;
-
-    [SerializeField] Sprite spriteBasic;
-    [SerializeField] Sprite spriteDeath1;
-    [SerializeField] Sprite spriteDeath2;
-
-
+    [Header("SyncVars")]
     public readonly SyncVar<float> SpawnerHealth = new SyncVar<float>();
     public readonly SyncVar<Color> HealthPointColor = new SyncVar<Color>();
 
     public override void OnStartServer()
     {
         if (!IsServerInitialized) return;
-
-        //if (Instance == null) Instance = this;
-        //else
-        //{
-        //    Destroy(gameObject);
-        //    Debug.Log("multiple Instances of BulletSpawner found. DESTROY.");
-        //}
     }
 
     private void Awake()
@@ -66,9 +59,8 @@ public class BulletSpawner: NetworkBehaviour
         {
             SpriteRenderer renderer = HealthPoint.GetComponent<SpriteRenderer>();
             renderer.color = HealthPointColor.Value;
-            //UpdateHealthPoint();
+   
         };
-        //SpriteRenderer renderer = HealthPoint.GetComponent<SpriteRenderer>();
     }
 
     [Server]
@@ -90,22 +82,18 @@ public class BulletSpawner: NetworkBehaviour
     [Server]
     private void UpdateHealthPoint()
     {
-        //SpriteRenderer renderer = HealthPoint.GetComponent<SpriteRenderer>();
         if (currentHealth == maxHealth)
         {
-            //renderer.color = Color.green;
             HealthPointColor.Value = Color.green;
         }
         else
         {
             if (currentHealth <= maxHealth / 2)
             {
-                //renderer.color = Color.yellow;                  // mach die color zu ner varsync | ok ne 
                 HealthPointColor.Value = Color.yellow;
             }
             if (currentHealth <= maxHealth / 3)
             {
-                //renderer.color = Color.red;
                 HealthPointColor.Value = Color.red;
                 strongerAttack = true;
             }
@@ -122,13 +110,11 @@ public class BulletSpawner: NetworkBehaviour
             spawnedBullet = Instantiate(Bullet, this.gameObject.transform.position, Quaternion.identity);
             spawnedBullet.GetComponent<Bullet>().speed = speed;
             spawnedBullet.GetComponent<Bullet>().bulletLife = bulletLife;
-            spawnedBullet.transform.rotation = transform.rotation;
-                       
+            spawnedBullet.transform.rotation = transform.rotation;                      
             if (strongerAttack) spawnedBullet.GetComponent<Bullet>().damage =+ 20;
 
             // Spawn it on all clients (server authority)
             Spawn(spawnedBullet);
-            Debug.Log(spawnedBullet + ": bulletLife: " + bulletLife);
         }
     }
 
@@ -136,14 +122,12 @@ public class BulletSpawner: NetworkBehaviour
     public void AttemptToDie()
     {
         StartCoroutine(ChangeSpriteTemp(0.02f));
-
-        //Die();
     }
 
     [Server]
     public IEnumerator ChangeSpriteTemp(float delay)
     {
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>();       //syncvar?
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>(); 
         renderer.sprite = spriteDeath1;
         yield return new WaitForSeconds(delay);
         renderer.sprite = spriteDeath2;
@@ -155,20 +139,7 @@ public class BulletSpawner: NetworkBehaviour
     [Server]
     public void Die()
     {
-        Debug.Log("BulletSpawner sagt byebye");
         Despawn(DespawnType.Destroy);
         Destroy(this.gameObject);
     }
-
-
-    //[Server]
-    //public IEnumerator ChangeSpriteTempBack(float delay)
-    //{
-    //    yield return new WaitForSeconds(delay);
-    //    {
-    //        SpriteRenderer renderer = GetComponent<SpriteRenderer>();       //syncvar?
-    //        renderer.sprite = spriteBasic;
-    //    }
-    //}
-
 }
