@@ -178,6 +178,10 @@ MonoBehaviour:
       m_Action: Attack
       m_Flags: 0
     m_Flags: 0
+  spriteBasic: {fileID: -1658982301481687879, guid: 36c85dc80b3567848994aaea958cfc9d, type: 3}
+  spriteWhenDamaged: {fileID: -2992476005548548997, guid: f8491f66deea21d47bff3a8608d22131, type: 3}
+  spriteDeath1: {fileID: 21300000, guid: 72c7b32236f3bfa4fbafac02c07c3a8a, type: 3}
+  spriteDeath2: {fileID: 21300000, guid: e91105eb81a5c414f946128cbabb8b77, type: 3}
 --- !u!114 &2435222343163669180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,7 +195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <IsNested>k__BackingField: 0
-  WasActiveDuringEdit: 1
+  WasActiveDuringEdit: 0
   WasActiveDuringEdit_Set1: 1
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
@@ -211,7 +215,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584326889694802945
+  _initializedTimestamp: -8584325192459273685
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -387,6 +391,7 @@ MonoBehaviour:
   bullet: {fileID: 8904565740786905056, guid: 14640a38207cfa44c8129b69d9b98b48, type: 3}
   bulletLife: 4
   speed: 5
+  shootFromPlayer: 0
 --- !u!58 &9000268969033256170
 CircleCollider2D:
   m_ObjectHideFlags: 0

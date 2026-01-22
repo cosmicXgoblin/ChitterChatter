@@ -302,19 +302,21 @@ public class NetworkGameManager : NetworkBehaviour
             if (other.gameObject.gameObject.GetComponent<PlayerData>().playerId == 1)
             {
                 Player1Health.Value = Player1Health.Value - dmg;
+                other.gameObject.GetComponent<PlayerController>().ChangeSpriteTemp();
             }
             else if (other.gameObject.gameObject.GetComponent<PlayerData>().playerId == 2)
             {
                 Player2Health.Value = Player1Health.Value - dmg;
+                other.gameObject.GetComponent<PlayerController>().ChangeSpriteTemp();
             }
         }               
-        else if (other.tag == "Enemy")
-        {
-            //other.GetComponent<BulletSpawner>().currentHealth = -dmg;
-            other.gameObject.GetComponent<BulletSpawner>().SpawnerHealth.Value =
-                other.gameObject.GetComponent<BulletSpawner>().SpawnerHealth.Value - dmg;
-            Debug.Log("Damage to Enemy was done");
-        }
+        //else if (other.tag == "Enemy")
+        //{
+        //    //other.GetComponent<BulletSpawner>().currentHealth = -dmg;
+        //    other.gameObject.GetComponent<BulletSpawner>().SpawnerHealth.Value =
+        //        other.gameObject.GetComponent<BulletSpawner>().SpawnerHealth.Value - dmg;
+        //    Debug.Log("Damage to Enemy was done");
+        //}
     }
 
     public void TakeDamageFromPlayer(Collider2D other, float dmg, int owner)
@@ -328,13 +330,15 @@ public class NetworkGameManager : NetworkBehaviour
         }
 
         if (other.GetComponent<BulletSpawner>().currentHealth <= 0)
-        {
+        { 
+            other.GetComponent<BulletSpawner>().AttemptToDie(5f);
+
             if (owner == 1) Player1Score.Value++;
             if (owner == 2) Player2Score.Value++;
             else Debug.Log("This bullet was without parents, so no score for anybody. Sorry!");
             Debug.Log(Player1Score.Value.ToString() + " / " + Player2Score.Value.ToString());
 
-            other.GetComponent<BulletSpawner>().Die();
+            
         }
 
 

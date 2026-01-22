@@ -32,9 +32,15 @@ public class BulletSpawner: NetworkBehaviour
     public GameObject spawnedBullet;
     private float timer = 0f;
 
+    private bool strongerAttack = false;
+
+    [SerializeField] Sprite spriteBasic;
+    [SerializeField] Sprite spriteDeath1;
+    [SerializeField] Sprite spriteDeath2;
 
 
     public readonly SyncVar<float> SpawnerHealth = new SyncVar<float>();
+    public readonly SyncVar<Color> HealthPointColor = new SyncVar<Color>();
 
     public override void OnStartServer()
     {
@@ -54,7 +60,15 @@ public class BulletSpawner: NetworkBehaviour
         SpawnerHealth.OnChange += (oldVal, newVal, asServer) =>
         {
             currentHealth = newVal;
-        };        
+            UpdateHealthPoint();
+        };
+        HealthPointColor.OnChange += (oldVal, newVal, asServer) =>
+        {
+            SpriteRenderer renderer = HealthPoint.GetComponent<SpriteRenderer>();
+            renderer.color = HealthPointColor.Value;
+            //UpdateHealthPoint();
+        };
+        //SpriteRenderer renderer = HealthPoint.GetComponent<SpriteRenderer>();
     }
 
     [Server]
@@ -70,17 +84,32 @@ public class BulletSpawner: NetworkBehaviour
             Fire();
             timer = 0;
         }
+        UpdateHealthPoint();
+    }
 
-        SpriteRenderer renderer = HealthPoint.GetComponent<SpriteRenderer>();
-        if (currentHealth == maxHealth) renderer.color = Color.green;
+    [Server]
+    private void UpdateHealthPoint()
+    {
+        //SpriteRenderer renderer = HealthPoint.GetComponent<SpriteRenderer>();
+        if (currentHealth == maxHealth)
+        {
+            //renderer.color = Color.green;
+            HealthPointColor.Value = Color.green;
+        }
         else
         {
-            if (maxHealth / 2 <= currentHealth) renderer.color = Color.yellow;
-            else renderer.color = Color.red;
+            if (currentHealth <= maxHealth / 2)
+            {
+                //renderer.color = Color.yellow;                  // mach die color zu ner varsync | ok ne 
+                HealthPointColor.Value = Color.yellow;
+            }
+            if (currentHealth <= maxHealth / 3)
+            {
+                //renderer.color = Color.red;
+                HealthPointColor.Value = Color.red;
+                strongerAttack = true;
+            }
         }
-
-        //if (currentHealth == 0)
-        //    Die();
     }
 
     public void Fire()
@@ -94,8 +123,8 @@ public class BulletSpawner: NetworkBehaviour
             spawnedBullet.GetComponent<Bullet>().speed = speed;
             spawnedBullet.GetComponent<Bullet>().bulletLife = bulletLife;
             spawnedBullet.transform.rotation = transform.rotation;
-
-            if (this.currentHealth <= maxHealth / 3) spawnedBullet.GetComponent<Bullet>().damage =+ 20;
+                       
+            if (strongerAttack) spawnedBullet.GetComponent<Bullet>().damage =+ 20;
 
             // Spawn it on all clients (server authority)
             Spawn(spawnedBullet);
@@ -103,11 +132,43 @@ public class BulletSpawner: NetworkBehaviour
         }
     }
 
+    [Server]
+    public void AttemptToDie(float delay)
+    {
+        StartCoroutine(ChangeSpriteTemp(0.02f));
+
+        //Die();
+    }
+
+    [Server]
+    public IEnumerator ChangeSpriteTemp(float delay)
+    {
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();       //syncvar?
+        renderer.sprite = spriteDeath1;
+        yield return new WaitForSeconds(delay);
+        renderer.sprite = spriteDeath2;
+        yield return new WaitForSeconds(delay);
+
+        Die();
+    }
+
+    [Server]
     public void Die()
     {
         Debug.Log("BulletSpawner sagt byebye");
         Despawn(DespawnType.Destroy);
         Destroy(this.gameObject);
     }
+
+
+    //[Server]
+    //public IEnumerator ChangeSpriteTempBack(float delay)
+    //{
+    //    yield return new WaitForSeconds(delay);
+    //    {
+    //        SpriteRenderer renderer = GetComponent<SpriteRenderer>();       //syncvar?
+    //        renderer.sprite = spriteBasic;
+    //    }
+    //}
 
 }

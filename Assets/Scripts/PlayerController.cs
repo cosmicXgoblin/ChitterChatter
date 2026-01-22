@@ -23,6 +23,13 @@ public class PlayerController : NetworkBehaviour
     // References
     private PlayerBulletSpawner playerBulletSpawner;
 
+    //SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+    [SerializeField] Sprite spriteBasic;
+    [SerializeField] Sprite spriteWhenDamaged;
+    [SerializeField] Sprite spriteDeath1;
+    [SerializeField] Sprite spriteDeath2;
+
+
     #region Inits             
     private void OnDisable()
     {
@@ -149,5 +156,25 @@ public class PlayerController : NetworkBehaviour
             playerBulletSpawner.AttemptToFire();
         //}
 
+    }
+
+    [ServerRpc]
+    public void ChangeSpriteTemp()
+    {
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();       //syncvar?
+        renderer.sprite = spriteWhenDamaged;
+
+        StartCoroutine(ChangeSpriteTempBack(0.2f));
+    }
+
+
+    [Server]
+    public IEnumerator ChangeSpriteTempBack(float delay)                                   
+    {
+        yield return new WaitForSeconds(delay);
+        {
+            SpriteRenderer renderer = GetComponent<SpriteRenderer>();       //syncvar?
+            renderer.sprite = spriteBasic;
+        }
     }
 }

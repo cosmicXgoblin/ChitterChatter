@@ -166,7 +166,7 @@ MonoBehaviour:
   bulletLife: 0
   rotation: 0
   speed: 1
-  damage: 15
+  damage: 5
 --- !u!114 &-4058941002224964201
 MonoBehaviour:
   m_ObjectHideFlags: 0

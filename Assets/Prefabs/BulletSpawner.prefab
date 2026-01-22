@@ -65,7 +65,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584327096836228336
+  _initializedTimestamp: -8584325367374062597
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -105,9 +105,9 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 4646397013144520176}
   _networkObjectCache: {fileID: 4646397013144520176}
   spawnerType: 0
-  firingRate: 1
+  firingRate: 0
   currentHealth: 0
-  maxHealth: 10
+  maxHealth: 0
   HealthPoint: {fileID: 0}
   Bullet: {fileID: 8904565740786905056, guid: ee15a4b437ad5b84d8a56a4ed42d92eb, type: 3}
   spawnedBullet: {fileID: 0}
