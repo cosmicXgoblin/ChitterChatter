@@ -68,7 +68,6 @@ public class NetworkGameManager : NetworkBehaviour
     public readonly SyncVar<float> Player2Health = new SyncVar<float>();
     public readonly SyncVar<int> Player1Score = new SyncVar<int>();
     public readonly SyncVar<int> Player2Score = new SyncVar<int>();
-
     public int player1Score => Player1Score.Value;
     public int player2Score => Player2Score.Value;
 
@@ -89,9 +88,17 @@ public class NetworkGameManager : NetworkBehaviour
         // Suscribe to changing things
         gameState.OnChange += OnStateChanged;
 
-        Player1Score.OnChange += (oldVal, newVal, asServer) => UpdateScore();
-        Player2Score.OnChange += (oldVal, newVal, asServer) => UpdateScore();
-
+        // hooking everything up
+        Player1Score.OnChange += (oldVal, newVal, asServer) =>
+        {
+            if (player1ScoreText != null)
+                player1ScoreText.text = newVal.ToString();
+        };
+        Player2Score.OnChange += (oldVal, newVal, asServer) =>
+        {
+            if (player2ScoreText != null)
+                player2ScoreText.text = newVal.ToString();
+        };
         Player1Name.OnChange += (oldVal, newVal, asServer) =>
         {
             if (player1NameText != null)
@@ -151,27 +158,22 @@ public class NetworkGameManager : NetworkBehaviour
         if (players.Length >= 2 && players.All(p => p.IsReady))
         {
             SetPlayerData();
-            UpdateScore();
 
             UiOnStartGameRpc();
-            //LevelScreen.SetActive(true);
-            //Despawn(Level0);
 
             gameState.Value = GameState.Playing;
 
-            // for testing only
+            // was only for testing purpose, but due to time issues it looks like this until further notice
             SpawnBulletSpawner(15f, Spawnpoint1, 1f, true);
             SpawnBulletSpawner(30f, Spawnpoint2, 3f, false);
             SpawnBulletSpawner(45f, Spawnpoint3, 0.5f, true);
             Debug.Log("BulletSpawner should be spawned now");
-
-            //UiOnStartGameRpc();
         }
     }
 
+    // checks if the player isReady
     public void SetPlayerReady()
     {
-
         foreach (var player in FindObjectsByType<PlayerController>(FindObjectsSortMode.None))
         {
             if (player.IsOwner)
@@ -191,6 +193,7 @@ public class NetworkGameManager : NetworkBehaviour
         }
     }
     
+    // sets the player to !isReady for the restart
     public void SetPlayerUnready()
     {
         foreach (var player in FindObjectsByType<PlayerController>(FindObjectsSortMode.None))
@@ -216,6 +219,7 @@ public class NetworkGameManager : NetworkBehaviour
 
     private void UpdateStateText()
     {
+        // should only handle the update and maybe call upon other methods
         if (stateText == null) return;
 
         switch (gameState.Value)
@@ -235,8 +239,6 @@ public class NetworkGameManager : NetworkBehaviour
             case GameState.Finished:
                 stateText.text = "Finished";
                 UiGameStateFinished();
-                //stateTextBox.SetActive(false);
-                //FinishedScreen.SetActive(true);
                 foreach (var bulletSpawner in FindObjectsByType<BulletSpawner>(FindObjectsSortMode.None))
                 {
                     Despawn(bulletSpawner);
@@ -254,15 +256,17 @@ public class NetworkGameManager : NetworkBehaviour
         UiManager.Instance.UiOnStartGame();
     }
     #endregion
-   
+
     // So, long story short, i was so stressed out that i completly forgot everything i knew + the difference between NetworkGameManager & Game Manager.
     // The longer the project went on, the more i struggled with organizing.
     // If i find the time, i'll come back and organize it the right way, atm it's my personal bowl of spaghetti code.
     #region GameManager
+    [Server]
     public void SetPlayerData()
     {
         Player1Score.Value = 0;
         Player2Score.Value = 0;
+        UpdateScore();
 
         foreach (var playerData in FindObjectsByType<PlayerData>(FindObjectsSortMode.None))
             if (playerData.IsOwner && playerData.playerId == 1)
@@ -298,10 +302,11 @@ public class NetworkGameManager : NetworkBehaviour
                 playerData.gameObject.transform.position = player2SpawnPoint.transform.position;
             }
     }
-
+    
+    [Server]
     public void TakeDamage(Collider2D other, float dmg)
     {
-        // friendly fire is on atm - TODO: toggle it
+        // friendly fire is off atm - TODO: toggle it
         if (other.tag == "Player")
         {
             if (other.gameObject.gameObject.GetComponent<PlayerData>().playerId == 1)
@@ -316,22 +321,15 @@ public class NetworkGameManager : NetworkBehaviour
             }
             else if (other.gameObject.gameObject.GetComponent<PlayerData>().playerId == 2)
             {
-                Player2Health.Value = Player1Health.Value - dmg;
+                Player2Health.Value = Player2Health.Value - dmg;
                 other.gameObject.GetComponent<PlayerController>().ChangeSpriteTemp();
 
-                if (Player1Health.Value <= 0)
+                if (Player2Health.Value <= 0)
                 {
                     other.gameObject.GetComponent<PlayerController>().AttemptToDie(0.02f);
                 }
             }
         }
-        //else if (other.tag == "Enemy")
-        //{
-        //    //other.GetComponent<BulletSpawner>().currentHealth = -dmg;
-        //    other.gameObject.GetComponent<BulletSpawner>().SpawnerHealth.Value =
-        //        other.gameObject.GetComponent<BulletSpawner>().SpawnerHealth.Value - dmg;
-        //    Debug.Log("Damage to Enemy was done");
-        //}
     }
     public void TakeDamageFromPlayer(Collider2D other, float dmg, int owner)
     {
@@ -363,21 +361,10 @@ public class NetworkGameManager : NetworkBehaviour
         gameState.Value = GameState.WaitingForPlayers;
         round++;
     }
-    
+
+    [Server]
     public void PayForStrongAttack(int playerId)
     {
-        //if (playerId == 1)
-        //{
-        //    if (Player1Score.Value >= 1)
-        //        Player1Score.Value = Player1Score.Value - 1;
-        //    playerBulletSpawner.AttemptToFire();
-        //}
-        //if (playerId == 2)
-        //{
-        //    if (Player2Score.Value >= 1)
-        //        Player2Score.Value = Player1Score.Value - 1;
-        //}
-        foreach (var player in FindObjectsByType<PlayerController>(FindObjectsSortMode.None))
         {
                if (playerId == 1)
                 {
@@ -413,6 +400,7 @@ public class NetworkGameManager : NetworkBehaviour
     #endregion
 
     #region PlayerController
+    // assigning the PlayerBulletSpawner Script in Player the Id so we can see who shot it
     private void SetPlayerBulletSpawner()
     {
         foreach (var player in FindObjectsByType<PlayerController>(FindObjectsSortMode.None))
@@ -424,8 +412,9 @@ public class NetworkGameManager : NetworkBehaviour
         }
     }
     #endregion
-
+    
     #region UiManager
+    [Server]
     private void UpdateScore()
     {
         player1ScoreText.text = Player1Score.Value.ToString();
@@ -439,13 +428,11 @@ public class NetworkGameManager : NetworkBehaviour
     {
         spawnedBulletSpawner = Instantiate(bulletSpawner, this.transform.position, Quaternion.identity);
         spawnedBulletSpawner.transform.position = spawn.position;
-        //spawnedBulletSpawner.gameObject.GetComponent<BulletSpawner>().firingRate = speed;
         spawnedBulletSpawner.gameObject.GetComponentInChildren<BulletSpawner>().firingRate = speed;
 
+        // if it's the SpawnerType.Spin, it should spin
         if (spin)
             spawnedBulletSpawner.GetComponentInChildren<BulletSpawner>().spawnerType = SpawnerType.Spin;
-
-        //if (spin) spawnerType.Spin.Value;
 
         spawnedBulletSpawner.GetComponentInChildren<BulletSpawner>().SpawnerHealth.Value = health;
         spawnedBulletSpawner.GetComponentInChildren<BulletSpawner>().currentHealth = health;

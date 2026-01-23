@@ -37,12 +37,13 @@ public class PlayerBulletSpawner : NetworkBehaviour
     #endregion
 
     #region Attacking
-    [Server]
+    [ServerRpc]
     public void AttemptToFire()
-     {
+         {
         if (!IsServerInitialized) //!IsOwner)
             return;
 
+        //gets the playerid so we can correctly calculate the score if hit object dies
         shootFromPlayer = gameObject.GetComponent<PlayerData>().playerId;
         spawnedBullet = Instantiate(bullet_normal, this.transform.position, Quaternion.identity);
  
@@ -54,10 +55,12 @@ public class PlayerBulletSpawner : NetworkBehaviour
         // Spawn it on all clients (server authority)
         Spawn(spawnedBullet);
 
-        Debug.Log("Sollte gefeuert haben");
+        //Debug.Log("Sollte gefeuert haben");
     }
 
+    [ServerRpc]
     public void AttemptToFireStrong()
+    // same but different: get's called if we use the strong attack and pay 1 scorepoint for it
     {
         if (!IsServerInitialized) //!IsOwner)
             return;

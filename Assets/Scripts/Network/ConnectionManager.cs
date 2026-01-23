@@ -2,8 +2,8 @@ using FishNet.Managing;
 using UnityEngine;
 
 public class ConnectionManager : MonoBehaviour
+// script is NOT inheriting from NetworkBehaviour bc it's active before and after the network is active
 {
-    // script is NOT inheriting from NetworkBehaviour bc it's active before and after the network is active
     [SerializeField] private NetworkManager _networkManager;
 
     void Start()
@@ -11,7 +11,6 @@ public class ConnectionManager : MonoBehaviour
         if (_networkManager == null)
         {
             _networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManager>();
-
         }
     }
 

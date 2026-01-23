@@ -19,17 +19,6 @@ public class BootstrapSceneManager : MonoBehaviour
     {
         if (!InstanceFinder.IsServer)             // InstanceFinder: allows interacting with FishNet w/o being a NetworkBehaviour-Script
             return;
-
-        //// for testing purpose: loading between the scenes
-        //if(Input.GetKeyDown(KeyCode.Alpha1))
-        //{
-        //    LoadScene("Scene1");
-        //}
-
-        //if (Input.GetKeyDown(KeyCode.Alpha1))
-        //{
-        //    LoadScene("Scene2");
-        //}
     }
 
     public void LoadScene(string sceneName)
@@ -46,14 +35,14 @@ public class BootstrapSceneManager : MonoBehaviour
 
     public void Load2()
     {
-        LoadScene("GameSzene");
+        LoadScene("Game");
         UnloadScene("Scene1");
     }
 
     public void Load1()
     {
         LoadScene("Scene1");
-        UnloadScene("GameSzene");
+        UnloadScene("Game");
     }
 
 }

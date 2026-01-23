@@ -30,6 +30,7 @@ public class UiManager : MonoBehaviour
     }
 
     #region UiOn...
+    // region respionsible for UiActions on specific conditions / gamestates
     private void UiOnAwake()
     {
         MenuJoinServer.SetActive(false);
@@ -49,16 +50,16 @@ public class UiManager : MonoBehaviour
         ScoreScreen.SetActive(true);
        // ShowScoreUi(playerId);
     }
-
-
     #endregion
 
     #region Click(...)
+    // region for methods that are called upon when clicked upon a button
     public void ClickRestartGame()
     {
         RestartGameUi();
         NetworkGameManager.Instance.RestartGame();
     }
+    
     public void ClickMainMenu()
     {
         FinishedScreen.SetActive(false);
@@ -78,11 +79,10 @@ public class UiManager : MonoBehaviour
     }
     #endregion
 
-
-
     #region Finished?
     public void UiOnFinishedGameScore(string Player1Name, string Player1Score, string Player2Name, string Player2Score)
     {
+        // showing the data on the mock-up screen
         MessageScore.text = "Player " + Player1Name + " with " + Player1Score + "\nPlayer " + Player2Name + " with " + Player2Score;
     }
     private void RestartGameUi()
