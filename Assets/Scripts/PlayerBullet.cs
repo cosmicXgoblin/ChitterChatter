@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class PlayerBullet : NetworkBehaviour
 {
+    [Header("Bullet Attributes")]
     public float bulletLife = 1f;
     public float rotation = 0f;
     public float speed = 1f;
     public int owner;
-
     public float damage = 5f;
 
     private Vector2 spawnPoint;
@@ -48,7 +48,8 @@ public class PlayerBullet : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Damage to Enemy was done");
+        // if it collides with an Enemy, it will registered as damage and destroyed
+        //Debug.Log("Damage to Enemy was done");
         if (other.tag == "Enemy")
         {
             Debug.Log("Damage to Enemy will be done");
@@ -63,6 +64,6 @@ public class PlayerBullet : NetworkBehaviour
     {
         Despawn(DespawnType.Destroy);
         Destroy(this.gameObject);
-        Debug.Log("ByeBye PlayerBullet with the owner: " + owner);
+        //Debug.Log("ByeBye PlayerBullet with the owner: " + owner);
     }
 }

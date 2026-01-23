@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Windows;
 
 public class PlayerController : NetworkBehaviour
-{                                                                                       // beide sind privat damit spieler nicht drankommt: readonly = public get, private set 
+{           
     [Header("Multiplayer")]
     private readonly SyncVar<bool> isReady = new SyncVar<bool>();
     public bool IsReady => isReady.Value;
@@ -21,10 +21,10 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private InputAction attackAction_normal;
     [SerializeField] private InputAction attackAction_strong;
 
-    // References
+    [Header("References")]
     private PlayerBulletSpawner playerBulletSpawner;
 
-    //SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+    [Header("Sprites")]
     [SerializeField] Sprite spriteBasic;
     [SerializeField] Sprite spriteWhenDamaged;
     [SerializeField] Sprite spriteDeath1;
@@ -50,12 +50,13 @@ public class PlayerController : NetworkBehaviour
         StartCoroutine(DelayedIsOwner());
     }
 
+    // used to wait a bit for ownership
     private IEnumerator DelayedIsOwner()
     {
-        yield return null;  // n frame abwarten um zu schauen ob ownerhip gesetzt ist (stoppt hier bis die funktion wieder aufgerufen wird)
+        yield return null;
         if (IsOwner)
         {
-            moveAction?.Enable();                                                           // ? = if not null
+            moveAction?.Enable();                                            
             attackAction_normal?.Enable();
             attackAction_strong?.Enable();
 
@@ -69,15 +70,13 @@ public class PlayerController : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        if (isReady.Value)                                                  // hübscher: if die eintritt als erstes
+        if (isReady.Value)                                           
         {
-            //if (attackAction_normal.triggered)
-            //    CheckForAttack();
             if (attackAction_normal.triggered)
                 playerBulletSpawner.AttemptToFire();
             if (attackAction_strong.triggered)
                 CheckForAttack();
-                HandleInput();
+            HandleInput();
         }
     }
 
@@ -87,10 +86,9 @@ public class PlayerController : NetworkBehaviour
     {
         isReady.Value = !isReady.Value;
 
-        //if (NetworkGameManager.Instance.round <= 1)
-        //{
-            // TO-DO: pls, for the love of everything, change it
-            if (transform.position.x < 0)                                                   // wenn der spieler links ist
+            // didn't have the time to change it, so it's still ugly and.. well. functional-ish
+            // if the player.position.x is less than 0, the player gets the ID 1, if not then the ID 2
+            if (transform.position.x < 0)               
             {
                 NetworkGameManager.Instance.Player1Name.Value = name;
                 this.GetComponent<PlayerData>().playerId = 1;
@@ -106,12 +104,11 @@ public class PlayerController : NetworkBehaviour
                 if (IsReady) NetworkGameManager.Instance.Player2State.Value = " is ready";
                 else NetworkGameManager.Instance.Player2State.Value = " is not ready";
             }
-        //}
-        //else
         {
+            // enabling all the moves
             if (IsOwner)
             {
-                moveAction?.Enable();                                                           // ? = if not null
+                moveAction?.Enable();                     
                 attackAction_normal?.Enable();
                 attackAction_strong?.Enable();
             }
@@ -136,11 +133,12 @@ public class PlayerController : NetworkBehaviour
         float inputX = moveAction.ReadValue<Vector2>().x;
         float inputY = moveAction.ReadValue<Vector2>().y;
 
+        // there was input
         if (inputX != 0 || inputY != 0)
         {
-            Move(inputX, inputY);                               // wenn kein input, dann nichts an server senden
+            Move(inputX, inputY);
             Rotate(inputX, inputY);
-            Debug.Log("inputX: " + inputX + "/ inputY: " + inputY);
+            //Debug.Log("inputX: " + inputX + "/ inputY: " + inputY);
         }
 
     }
@@ -159,27 +157,25 @@ public class PlayerController : NetworkBehaviour
     {
         //if (inputX > 0) Transform.Rotate.z = -180;
 
-        // this is ugly and for testing purpose only. pls do not scream.
+        // (this is ugly and for testing purpose only. pls do not scream)
+        // surprise it's permanent for now: it is rotating the player character in the direction we are moving
         if (inputX > 0) transform.eulerAngles = new Vector3(0, 0, 0);
         if (inputX < 0) transform.eulerAngles = new Vector3(0, 0, 180);
         if (inputY > 0) transform.eulerAngles = new Vector3(0, 0, 90);
         if (inputY < 0) transform.eulerAngles = new Vector3(0, 0, 270);
-        //if (inputX != 0)
-        //{
-        //if (inputX > 0) transform.rotation = new Vector3(0, 0, 180);
-        //if (inputX != 0) transform.rotation = Quaternion.Euler(0, 0, inputX);
-        //if (inputX < 0) transform.rotation = Quaternion.Euler(0, 0, -180);
-        //}
+
     }
     #endregion
 
     #region Attacking
     [Server]
     private void CheckForAttack()
-     {
+    { 
+        if (!IsOwner) return;
         Debug.Log("(Player:) stronger attack?");
         int iD = gameObject.GetComponent<PlayerData>().playerId;
 
+        // via the ID we can check if the player is able to pay for the stronger attack; if so, it will fire
         if (iD == 1)
         {
             Debug.Log(NetworkGameManager.Instance.Player1Score.Value);
@@ -198,22 +194,21 @@ public class PlayerController : NetworkBehaviour
                 NetworkGameManager.Instance.PayForStrongAttack(iD);
                 playerBulletSpawner.AttemptToFireStrong();
             }
-
         }
-        //PayForStrongAttack(iD);
-
-
     }
     #endregion
 
     #region Sprites/Animation
+    // if the player gets damaged, the sprite will change to a different one to highlight that the player got hurt
     [ServerRpc]
     public void ChangeSpriteTemp()
+
     {
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>();       //syncvar?
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();    
         renderer.sprite = spriteWhenDamaged;
 
-        StartCoroutine(ChangeSpriteTempBack(0.2f));
+        if(gameObject.GetComponent<PlayerData>().currentHealth > 0)
+            StartCoroutine(ChangeSpriteTempBack(0.2f));
     }
 
     [Server]
@@ -221,19 +216,20 @@ public class PlayerController : NetworkBehaviour
     {
         yield return new WaitForSeconds(delay);
         {
-            SpriteRenderer renderer = GetComponent<SpriteRenderer>();       //syncvar?
+            SpriteRenderer renderer = GetComponent<SpriteRenderer>();     
             renderer.sprite = spriteBasic;
         }
     }
 
     [Server]
-    public IEnumerator ChangeSpriteTemp(float delay)
+    public IEnumerator ChangeSpriteDead(float delay)
+    // mini two-part animation if the player is dead
     {
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>();       //syncvar?
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();  
         renderer.sprite = spriteDeath1;
         yield return new WaitForSeconds(delay);
         renderer.sprite = spriteDeath2;
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSeconds(delay+0.3f);
 
         Die();
     }
@@ -243,24 +239,23 @@ public class PlayerController : NetworkBehaviour
     [Server]
     public void AttemptToDie(float delay)
     {
-        StartCoroutine(ChangeSpriteTemp(0.02f));
+        StartCoroutine(ChangeSpriteDead(0.02f));
     }
 
-    [Server][ServerRpc]
+    [Server]
     public void Die()
     {
         Debug.Log("You're dead now! YAY.");
 
+        // disabling all of the moves
         if (IsOwner)
         {
             moveAction?.Disable();
             attackAction_normal?.Disable();
             attackAction_strong?.Disable();
         }
+        // setting back the isReady
         isReady.Value = !isReady.Value;
-
-        int iD = gameObject.GetComponent<PlayerData>().playerId;
-        //UiManager.Instance.UiOnFinishedGame(iD);
 
         NetworkGameManager.Instance.gameState.Value = GameState.Finished;
     }

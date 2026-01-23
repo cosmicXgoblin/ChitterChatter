@@ -51,7 +51,7 @@ public class BulletSpawner: NetworkBehaviour
 
     private void Awake()
     {
-
+        // hooking it up
         SpawnerHealth.OnChange += (oldVal, newVal, asServer) =>
         {
             currentHealth = newVal;
@@ -79,7 +79,6 @@ public class BulletSpawner: NetworkBehaviour
             Fire();
             timer = 0;
         }
-        UpdateHealthPoint();
     }
 
     [Server]
@@ -109,6 +108,8 @@ public class BulletSpawner: NetworkBehaviour
         if (!IsServerInitialized)
             return;
 
+        // looks if this is a stronger attack or a normal one and instiates the corresponding bullet
+        // after that, the soon-to-be spawned bullet gets it's attributes from the spawner
         if (NetworkGameManager.Instance.CurrentState == GameState.Playing)
         {
             if (!strongerAttack)
@@ -126,6 +127,8 @@ public class BulletSpawner: NetworkBehaviour
     #endregion
 
     #region Animation/Sprites
+
+    // a short animation for a destroyed bullet spawner
     [Server]
     public IEnumerator ChangeSpriteTemp(float delay)
     {
@@ -150,6 +153,7 @@ public class BulletSpawner: NetworkBehaviour
     [Server]
     public void AttemptToDie()
     {
+        // with a little bit of delay so we are able to see the animation
         StartCoroutine(ChangeSpriteTemp(0.02f));
     }
     #endregion
