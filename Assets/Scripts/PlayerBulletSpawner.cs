@@ -72,6 +72,8 @@ public class PlayerBulletSpawner : NetworkBehaviour
 
         // Spawn it on all clients (server authority)
         Spawn(spawnedBullet);
+        spawnedBullet.transform.rotation = transform.rotation;
+        Spawn(spawnedBullet);
 
         Debug.Log("Sollte gefeuert haben");
     }

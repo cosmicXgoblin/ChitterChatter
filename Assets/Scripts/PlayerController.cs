@@ -77,7 +77,7 @@ public class PlayerController : NetworkBehaviour
                 playerBulletSpawner.AttemptToFire();
             if (attackAction_strong.triggered)
                 CheckForAttack();
-            HandleInput();
+                HandleInput();
         }
     }
 
@@ -246,7 +246,7 @@ public class PlayerController : NetworkBehaviour
         StartCoroutine(ChangeSpriteTemp(0.02f));
     }
 
-    [Server]
+    [Server][ServerRpc]
     public void Die()
     {
         Debug.Log("You're dead now! YAY.");
@@ -258,6 +258,9 @@ public class PlayerController : NetworkBehaviour
             attackAction_strong?.Disable();
         }
         isReady.Value = !isReady.Value;
+
+        int iD = gameObject.GetComponent<PlayerData>().playerId;
+        //UiManager.Instance.UiOnFinishedGame(iD);
 
         NetworkGameManager.Instance.gameState.Value = GameState.Finished;
     }

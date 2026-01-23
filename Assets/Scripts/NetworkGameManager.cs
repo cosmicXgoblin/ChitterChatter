@@ -154,7 +154,7 @@ public class NetworkGameManager : NetworkBehaviour
             UpdateScore();
 
             UiOnStartGameRpc();
-            //Level1.SetActive(true);
+            //LevelScreen.SetActive(true);
             //Despawn(Level0);
 
             gameState.Value = GameState.Playing;
@@ -234,8 +234,9 @@ public class NetworkGameManager : NetworkBehaviour
                 break;
             case GameState.Finished:
                 stateText.text = "Finished";
-                stateTextBox.SetActive(false);
-                FinishedScreen.SetActive(true);
+                UiGameStateFinished();
+                //stateTextBox.SetActive(false);
+                //FinishedScreen.SetActive(true);
                 foreach (var bulletSpawner in FindObjectsByType<BulletSpawner>(FindObjectsSortMode.None))
                 {
                     Despawn(bulletSpawner);
@@ -400,7 +401,15 @@ public class NetworkGameManager : NetworkBehaviour
             }
         }
     }
-    
+
+    private void UiGameStateFinished()
+    {
+        UiManager.Instance.UiOnFinishedGame();
+        UiManager.Instance.UiOnFinishedGameScore(Player1Name.Value.ToString(), Player1Score.Value.ToString(), 
+                                                    Player2Name.Value.ToString(), Player2Score.Value.ToString());
+    }
+
+    //stateTextBox.SetActiv
     #endregion
 
     #region PlayerController
