@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 3455471322884588296}
   - component: {fileID: 403583082238118413}
   m_Layer: 0
-  m_Name: Bullet
+  m_Name: Bullet_high
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,7 +82,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 8305673136482202990, guid: 45fbf75b7dec47844a6a028df1fcba13, type: 3}
+  m_Sprite: {fileID: 4201685801748629828, guid: ff8b629bdc6faeb43aeff4f584b16c6e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -124,7 +124,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584327075951409977
+  _initializedTimestamp: -8584324565219912541
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -139,9 +139,9 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 2
+  <PrefabId>k__BackingField: 5
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 4086663663084549645
+  <AssetPathHash>k__BackingField: 9902178243709243956
   SceneId: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
@@ -166,7 +166,7 @@ MonoBehaviour:
   bulletLife: 0
   rotation: 0
   speed: 1
-  damage: 5
+  damage: 30
 --- !u!114 &-4058941002224964201
 MonoBehaviour:
   m_ObjectHideFlags: 0

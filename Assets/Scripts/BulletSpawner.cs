@@ -30,7 +30,8 @@ public class BulletSpawner: NetworkBehaviour
     [SerializeField] Sprite spriteDeath2;
 
     [Header("Bullet Attributes")]
-    public GameObject Bullet;
+    public GameObject Bullet_normal;
+    public GameObject Bullet_moreDmg;
     private float bulletLife = 10f;
     private float speed = 1f;
 
@@ -110,12 +111,14 @@ public class BulletSpawner: NetworkBehaviour
 
         if (NetworkGameManager.Instance.CurrentState == GameState.Playing)
         {
-            spawnedBullet = Instantiate(Bullet, this.gameObject.transform.position, Quaternion.identity);
+            if (!strongerAttack)
+                spawnedBullet = Instantiate(Bullet_normal, this.gameObject.transform.position, Quaternion.identity);
+            if (strongerAttack)
+                spawnedBullet = Instantiate(Bullet_moreDmg, this.gameObject.transform.position, Quaternion.identity);
+
             spawnedBullet.GetComponent<Bullet>().speed = speed;
             spawnedBullet.GetComponent<Bullet>().bulletLife = bulletLife;
-            spawnedBullet.transform.rotation = transform.rotation;                      
-            if (strongerAttack) spawnedBullet.GetComponent<Bullet>().damage =+ 20;
-
+            spawnedBullet.transform.rotation = transform.rotation;
             // Spawn it on all clients (server authority)
             Spawn(spawnedBullet);
         }

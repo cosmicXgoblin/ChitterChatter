@@ -11,13 +11,13 @@ GameObject:
   - component: {fileID: 262111444184302529}
   - component: {fileID: 2531970114533916300}
   - component: {fileID: 6929915949512893337}
-  - component: {fileID: 7502813935668414574}
+  - component: {fileID: 2113522392256607436}
   - component: {fileID: -4058941002224964201}
   - component: {fileID: -4751891371146785630}
   - component: {fileID: 3455471322884588296}
-  - component: {fileID: 6803516864436414313}
+  - component: {fileID: 403583082238118413}
   m_Layer: 0
-  m_Name: PlayerBullet
+  m_Name: Bulelt_mid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,7 +82,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 3707410458817748765, guid: 8de7b2d55bcca604c9d94e5ab0367063, type: 3}
+  m_Sprite: {fileID: -5775155496376656800, guid: ea238e024956f9944a90be042112389d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -112,7 +112,7 @@ MonoBehaviour:
   <PredictedSpawn>k__BackingField: {fileID: 0}
   <PredictedOwner>k__BackingField: {fileID: 0}
   NetworkBehaviours:
-  - {fileID: 7502813935668414574}
+  - {fileID: 2113522392256607436}
   - {fileID: -4058941002224964201}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
@@ -124,7 +124,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584327096836228336
+  _initializedTimestamp: -8584324565219912541
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -141,14 +141,14 @@ MonoBehaviour:
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 16
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 17013680455475331697
+  <AssetPathHash>k__BackingField: 15315589358989471908
   SceneId: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 1}
     Scale: {x: 0.2, y: 0.2, z: 1}
     IsValid: 1
---- !u!114 &7502813935668414574
+--- !u!114 &2113522392256607436
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,16 +157,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 8904565740786905056}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43445a72043925a4cab0f5f209b6bec9, type: 3}
+  m_Script: {fileID: 11500000, guid: 2a0f68dbaee365a40b8ddc3f55d154b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 6929915949512893337}
   _networkObjectCache: {fileID: 6929915949512893337}
-  bulletLife: 10
+  bulletLife: 0
   rotation: 0
-  speed: 2
-  damage: 5
+  speed: 30
+  damage: 15
 --- !u!114 &-4058941002224964201
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,7 +182,7 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 6929915949512893337}
   _networkObjectCache: {fileID: 6929915949512893337}
-  _componentConfiguration: 3
+  _componentConfiguration: 0
   _synchronizeParent: 0
   _packing:
     Position: 1
@@ -274,7 +274,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.031126738, y: -0.03112626}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -284,9 +284,9 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 3.3189173, y: 2.5563211}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!58 &6803516864436414313
+--- !u!58 &403583082238118413
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -321,4 +321,4 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0.13}
-  m_Radius: 1.2213689
+  m_Radius: 1.0924597

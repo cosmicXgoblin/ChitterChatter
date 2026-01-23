@@ -12,7 +12,8 @@ public class PlayerBulletSpawner : NetworkBehaviour
     public static PlayerBulletSpawner Instance;
 
     [Header("Bullet Attributes")]
-    public GameObject bullet;
+    public GameObject bullet_normal;
+    public GameObject bullet_strong;
     public float bulletLife = 1f;
     public float speed = 1f;
 
@@ -38,19 +39,36 @@ public class PlayerBulletSpawner : NetworkBehaviour
     #region Attacking
     [Server]
     public void AttemptToFire()
-    {
+     {
         if (!IsServerInitialized) //!IsOwner)
             return;
 
         shootFromPlayer = gameObject.GetComponent<PlayerData>().playerId;
-
-        spawnedBullet = Instantiate(bullet, this.transform.position, Quaternion.identity);
+        spawnedBullet = Instantiate(bullet_normal, this.transform.position, Quaternion.identity);
+ 
         spawnedBullet.GetComponent<PlayerBullet>().speed = speed;
         spawnedBullet.GetComponent<PlayerBullet>().bulletLife = bulletLife;
         spawnedBullet.GetComponent<PlayerBullet>().owner = shootFromPlayer;
         spawnedBullet.transform.rotation = transform.rotation;
 
-        Debug.Log("Owner: " + spawnedBullet.GetComponent<PlayerBullet>().owner + " shootFromPlayer: " + shootFromPlayer);
+        // Spawn it on all clients (server authority)
+        Spawn(spawnedBullet);
+
+        Debug.Log("Sollte gefeuert haben");
+    }
+
+    public void AttemptToFireStrong()
+    {
+        if (!IsServerInitialized) //!IsOwner)
+            return;
+
+        shootFromPlayer = gameObject.GetComponent<PlayerData>().playerId;
+        spawnedBullet = Instantiate(bullet_strong, this.transform.position, Quaternion.identity);
+
+        spawnedBullet.GetComponent<PlayerBullet>().speed = speed;
+        spawnedBullet.GetComponent<PlayerBullet>().bulletLife = bulletLife;
+        spawnedBullet.GetComponent<PlayerBullet>().owner = shootFromPlayer;
+        spawnedBullet.transform.rotation = transform.rotation;
 
         // Spawn it on all clients (server authority)
         Spawn(spawnedBullet);

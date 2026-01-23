@@ -5996,7 +5996,7 @@ MonoBehaviour:
   player1StateBox: {fileID: 1545500053}
   player1StateText: {fileID: 1545500055}
   player1HealthBar: {fileID: 671977422}
-  player1Score: {fileID: 703736367}
+  player1ScoreText: {fileID: 703736367}
   healthBarSlider: {fileID: 671977424}
   healthBarValueText: {fileID: 1640137918}
   player2SpawnPoint: {fileID: 960909052}
@@ -6004,7 +6004,7 @@ MonoBehaviour:
   player2StateBox: {fileID: 516670082}
   player2StateText: {fileID: 516670084}
   player2HealthBar: {fileID: 1030939798}
-  player2Score: {fileID: 1410619078}
+  player2ScoreText: {fileID: 1410619078}
   healthBarSlider2: {fileID: 1030939800}
   healthBarValueText2: {fileID: 594159029}
   startscreen: {fileID: 1579508951}
@@ -11610,9 +11610,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 244cb4f3bd0eb1f4c8af9c7d8a37ebf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 2087211863}
-  _networkObjectCache: {fileID: 0}
   menuJoinServer: {fileID: 53134660}
   Level1: {fileID: 2132046660}
   areUReadyScreen: {fileID: 1899343351}

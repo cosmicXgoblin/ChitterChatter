@@ -160,23 +160,28 @@ MonoBehaviour:
       m_Action: Move
       m_Flags: 8
     m_Flags: 0
-  attackAction:
-    m_Name: Attack
+  attackAction_normal:
+    m_Name: Attack Action_normal
     m_Type: 0
-    m_ExpectedControlType: Button
-    m_Id: 58d74504-0943-49e2-8261-84d13f93c52a
+    m_ExpectedControlType: 
+    m_Id: 4d12f57f-9522-44e5-8d3d-2df0ec7320b4
     m_Processors: 
     m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: 18c8b378-d481-4def-8bb9-15e3e75d9441
-      m_Path: <Keyboard>/q
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Attack
-      m_Flags: 0
+    m_SingletonActionBindings: []
     m_Flags: 0
+  attackAction_strong:
+    m_Name: Attack Action_strong
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 97ad4c75-15ad-4f7f-8cc1-f5f8321c7697
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  spriteBasic: {fileID: 0}
+  spriteWhenDamaged: {fileID: 0}
+  spriteDeath1: {fileID: 0}
+  spriteDeath2: {fileID: 0}
 --- !u!114 &2435222343163669180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -210,7 +215,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584327096836228336
+  _initializedTimestamp: -8584324524577331829
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -540,7 +545,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4646397013144520176, guid: 109ad19400fe6ac468b02c29d7de19a3, type: 3}
       propertyPath: _initializedTimestamp
-      value: -8584327096836228336
+      value: -8584324524577331829
       objectReference: {fileID: 0}
     - target: {fileID: 4646397013144520176, guid: 109ad19400fe6ac468b02c29d7de19a3, type: 3}
       propertyPath: <IsNested>k__BackingField

@@ -214,15 +214,28 @@ MonoBehaviour:
       m_Action: Move
       m_Flags: 8
     m_Flags: 0
-  attackAction:
-    m_Name: Attack
+  attackAction_normal:
+    m_Name: Attack Action_normal
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: dd349bdb-0a3d-4e95-87e7-1e74eaf91dc8
+    m_Id: f1696eae-c143-4f3f-8654-b342790bb288
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
+  attackAction_strong:
+    m_Name: Attack Action_strong
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 64d33238-b9e5-4775-ad79-9004e10f0949
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  spriteBasic: {fileID: 0}
+  spriteWhenDamaged: {fileID: 0}
+  spriteDeath1: {fileID: 0}
+  spriteDeath2: {fileID: 0}
 --- !u!114 &3354985067614939379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -255,7 +268,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584327096836228336
+  _initializedTimestamp: -8584324524577331829
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -270,7 +283,7 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 4
+  <PrefabId>k__BackingField: 3
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 5342734844200817857
   SceneId: 0

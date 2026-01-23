@@ -18,7 +18,8 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Input System")]
     [SerializeField] private InputAction moveAction;
-    [SerializeField] private InputAction attackAction;
+    [SerializeField] private InputAction attackAction_normal;
+    [SerializeField] private InputAction attackAction_strong;
 
     // References
     private PlayerBulletSpawner playerBulletSpawner;
@@ -36,7 +37,8 @@ public class PlayerController : NetworkBehaviour
         if (!IsOwner) return;
 
         moveAction?.Disable();
-        attackAction?.Disable();    
+        attackAction_normal?.Disable();
+        attackAction_strong?.Disable();
 
         if (TimeManager != null)
             TimeManager.OnTick -= OnTick;
@@ -54,7 +56,8 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             moveAction?.Enable();                                                           // ? = if not null
-            attackAction?.Enable();
+            attackAction_normal?.Enable();
+            attackAction_strong?.Enable();
 
             if (TimeManager != null)
                 TimeManager.OnTick += OnTick;
@@ -68,7 +71,12 @@ public class PlayerController : NetworkBehaviour
 
         if (isReady.Value)                                                  // hübscher: if die eintritt als erstes
         {
-            if (attackAction.triggered) CheckForAttack();
+            //if (attackAction_normal.triggered)
+            //    CheckForAttack();
+            if (attackAction_normal.triggered)
+                playerBulletSpawner.AttemptToFire();
+            if (attackAction_strong.triggered)
+                CheckForAttack();
             HandleInput();
         }
     }
@@ -104,7 +112,8 @@ public class PlayerController : NetworkBehaviour
             if (IsOwner)
             {
                 moveAction?.Enable();                                                           // ? = if not null
-                attackAction?.Enable();
+                attackAction_normal?.Enable();
+                attackAction_strong?.Enable();
             }
         }
 
@@ -165,14 +174,34 @@ public class PlayerController : NetworkBehaviour
     #endregion
 
     #region Attacking
-    [ServerRpc]
+    [Server]
     private void CheckForAttack()
-    {
-        //if(IsOwner)
-        //{
-            Debug.Log("(Player:) ATTACK!");
-            playerBulletSpawner.AttemptToFire();
-        //}
+     {
+        Debug.Log("(Player:) stronger attack?");
+        int iD = gameObject.GetComponent<PlayerData>().playerId;
+
+        if (iD == 1)
+        {
+            Debug.Log(NetworkGameManager.Instance.Player1Score.Value);
+            if (NetworkGameManager.Instance.player1Score != 0)
+            {
+                NetworkGameManager.Instance.PayForStrongAttack(iD);
+                playerBulletSpawner.AttemptToFireStrong();
+            }
+
+        }
+        if (iD == 2)
+        {
+            Debug.Log(NetworkGameManager.Instance.Player2Score.Value);
+            if (NetworkGameManager.Instance.player2Score != 0)
+            {
+                NetworkGameManager.Instance.PayForStrongAttack(iD);
+                playerBulletSpawner.AttemptToFireStrong();
+            }
+
+        }
+        //PayForStrongAttack(iD);
+
 
     }
     #endregion
@@ -225,7 +254,8 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             moveAction?.Disable();
-            attackAction?.Disable();
+            attackAction_normal?.Disable();
+            attackAction_strong?.Disable();
         }
         isReady.Value = !isReady.Value;
 

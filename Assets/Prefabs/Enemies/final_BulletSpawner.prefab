@@ -153,7 +153,7 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
-  _initializedTimestamp: -8584325121514455577
+  _initializedTimestamp: -8584324521693064512
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
@@ -168,9 +168,9 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 12
+  <PrefabId>k__BackingField: 14
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 12989021163553855829
+  <AssetPathHash>k__BackingField: 13810918372527519059
   SceneId: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}
@@ -340,5 +340,6 @@ MonoBehaviour:
   spriteBasic: {fileID: 1298333680347580056, guid: 278728205aaf3e04ea2159009219561e, type: 3}
   spriteDeath1: {fileID: 21300000, guid: 16ff25c4f84d6fa41ac639135cd40d2b, type: 3}
   spriteDeath2: {fileID: 21300000, guid: 1f086c38bbaaed148823a9d09100b9b3, type: 3}
-  Bullet: {fileID: 8904565740786905056, guid: ee15a4b437ad5b84d8a56a4ed42d92eb, type: 3}
+  Bullet_normal: {fileID: 8904565740786905056, guid: ee15a4b437ad5b84d8a56a4ed42d92eb, type: 3}
+  Bullet_moreDmg: {fileID: 8904565740786905056, guid: c0fd8c422adcc8545b3e5118f53c230d, type: 3}
   spawnedBullet: {fileID: 0}

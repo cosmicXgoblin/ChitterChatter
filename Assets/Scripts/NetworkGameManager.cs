@@ -30,7 +30,7 @@ public class NetworkGameManager : NetworkBehaviour
     [SerializeField] private GameObject player1StateBox;
     [SerializeField] private TMP_Text player1StateText;
     [SerializeField] private GameObject player1HealthBar;
-    [SerializeField] private TMP_Text player1Score;
+    [SerializeField] private TMP_Text player1ScoreText;
     [SerializeField] private Slider healthBarSlider;
     [SerializeField] private TMP_Text healthBarValueText;
 
@@ -40,7 +40,7 @@ public class NetworkGameManager : NetworkBehaviour
     [SerializeField] private GameObject player2StateBox;
     [SerializeField] private TMP_Text player2StateText;
     [SerializeField] private GameObject player2HealthBar;
-    [SerializeField] private TMP_Text player2Score;
+    [SerializeField] private TMP_Text player2ScoreText;
     [SerializeField] private Slider healthBarSlider2;
     [SerializeField] private TMP_Text healthBarValueText2;
 
@@ -66,8 +66,11 @@ public class NetworkGameManager : NetworkBehaviour
     public readonly SyncVar<string> Player2State = new SyncVar<string>();
     public readonly SyncVar<float> Player1Health = new SyncVar<float>();
     public readonly SyncVar<float> Player2Health = new SyncVar<float>();
-    private readonly SyncVar<int> Player1Score = new SyncVar<int>();
-    private readonly SyncVar<int> Player2Score = new SyncVar<int>();
+    public readonly SyncVar<int> Player1Score = new SyncVar<int>();
+    public readonly SyncVar<int> Player2Score = new SyncVar<int>();
+
+    public int player1Score => Player1Score.Value;
+    public int player2Score => Player2Score.Value;
 
     [Header("Game")]
     public readonly SyncVar<GameState> gameState = new SyncVar<GameState>();
@@ -359,6 +362,45 @@ public class NetworkGameManager : NetworkBehaviour
         gameState.Value = GameState.WaitingForPlayers;
         round++;
     }
+    
+    public void PayForStrongAttack(int playerId)
+    {
+        //if (playerId == 1)
+        //{
+        //    if (Player1Score.Value >= 1)
+        //        Player1Score.Value = Player1Score.Value - 1;
+        //    playerBulletSpawner.AttemptToFire();
+        //}
+        //if (playerId == 2)
+        //{
+        //    if (Player2Score.Value >= 1)
+        //        Player2Score.Value = Player1Score.Value - 1;
+        //}
+        foreach (var player in FindObjectsByType<PlayerController>(FindObjectsSortMode.None))
+        {
+               if (playerId == 1)
+                {
+                    if (Player1Score.Value >= 1)
+                        Player1Score.Value = Player1Score.Value - 1;
+                }
+                if (playerId == 2)
+                {
+                    if (Player2Score.Value >= 1)
+                        Player2Score.Value = Player1Score.Value - 1;
+                } 
+            }
+
+
+
+        foreach (var player in FindObjectsByType<PlayerController>(FindObjectsSortMode.None))
+        {
+            if (player.IsOwner)
+            {
+                player.gameObject.GetComponent<PlayerBulletSpawner>().shootFromPlayer = player.gameObject.GetComponent<PlayerData>().playerId;
+            }
+        }
+    }
+    
     #endregion
 
     #region PlayerController
@@ -377,8 +419,8 @@ public class NetworkGameManager : NetworkBehaviour
     #region UiManager
     private void UpdateScore()
     {
-        player1Score.text = Player1Score.Value.ToString();
-        player2Score.text = Player2Score.Value.ToString();
+        player1ScoreText.text = Player1Score.Value.ToString();
+        player2ScoreText.text = Player2Score.Value.ToString();
     }
     #endregion
 
